@@ -1,81 +1,58 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-
+import { RouterView } from 'vue-router';
+import TheAside from './components/TheAside.vue';
+import TheFooter from './components/TheFooter.vue';
+import TheHeader from './components/TheHeader.vue';
 </script>
 
 <template>
-  <header>
-    <div class="wrapper">
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <el-container class="main-container">
+    <el-header>
+      <TheHeader />
+    </el-header>
+    <el-container class="main-content">
+      <el-aside>
+        <TheAside />
+      </el-aside>
+      <el-main>
+        <RouterView />
+      </el-main>
+    </el-container>
+    <el-footer>
+      <TheFooter />
+    </el-footer>
+  </el-container>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+.main-container {
+  padding-left: 2vw;
+  padding-right: 2vw;
+
+  padding-top: 2vh;
+  padding-bottom: 2vh;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
+.el-header {
+  background-color: #B3C0D1;
+  color: #333;
   text-align: center;
-  margin-top: 2rem;
+  line-height: 60px;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+.main-content .el-aside {
+  background-color: var(--el-color-primary-light-7);
+  color: var(--el-text-color-primary);
+  text-align: center;
+  line-height: 60px;
+
+  min-height: 80vh;
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.el-footer {
+  background-color: #903148;
+  color: #333;
+  text-align: center;
+  line-height: 60px;
 }
 </style>
