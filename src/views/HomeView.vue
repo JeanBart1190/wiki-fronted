@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div  style="color">
+  <div>
     你好你好你好你好你好你好你好你好你好
   </div>
 </template>
