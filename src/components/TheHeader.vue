@@ -1,14 +1,5 @@
 <script setup lang='ts'>
-import axios from 'axios';
 import { RouterLink } from 'vue-router';
-
-function getBook(): void {
-    axios.get('http://localhost:8080/ebook/select?bookname=教程').then((res) => {
-        console.log(res.data.content);
-        // bookDao.value = res.data.content;
-        // console.log(bookDao.value);
-    });
-}
 </script>
 
 

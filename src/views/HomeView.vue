@@ -29,7 +29,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-container class="main-content">
+  <el-container>
     <!-- 侧边栏 -->
     <el-aside>
       <TheAside />
