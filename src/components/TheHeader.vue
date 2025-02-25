@@ -1,5 +1,6 @@
 <script setup lang='ts'>
 import axios from 'axios';
+import { RouterLink } from 'vue-router';
 
 function getBook(): void {
     axios.get('http://localhost:8080/ebook/select?bookname=教程').then((res) => {
@@ -15,13 +16,13 @@ function getBook(): void {
 <template>
     <el-menu mode="horizontal">
         <el-menu-item>
-            首页
+            <RouterLink to="/">首页</RouterLink>
         </el-menu-item>
         <el-menu-item>
-            电子书管理
+            <RouterLink to="/admin/ebook">电子书管理</RouterLink>
         </el-menu-item>
         <el-menu-item>
-            关于我们
+            <RouterLink to="/about">关于</RouterLink>
         </el-menu-item>
     </el-menu>
 </template>

@@ -19,7 +19,7 @@ const router = createRouter({
     {
       path: '/admin/ebook',
       name: 'AdminEbook',
-      component: () => import('../views/admin/admin-ebook.vue'),
+      component: () => import('../views/admin/AdminEbook.vue'),
     },
   ],
 })
