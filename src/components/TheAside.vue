@@ -1,24 +1,32 @@
 <script setup lang='ts'>
 
+import { onMounted, ref } from 'vue';
+import type { RouteRecordRaw } from 'vue-router';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const routes = ref<RouteRecordRaw[]>([]);
+
+function testRouter(): void {
+    routes.value = [...router.options.routes];
+    routes.value.forEach((item) => {
+        console.log(item.path);
+    })
+    console.log(router.options.routes);
+}
+
+onMounted(() => {
+    testRouter();
+});
 </script>
 
+<!-- 侧边栏组件 -->
 <template>
     <el-scrollbar>
-        <el-menu>
-            <el-sub-menu index="1">
-                <template #title>Sub1</template>
-                <el-menu-item-group title="Group1">
-                    <el-menu-item index="1-1">Option 1</el-menu-item>
-                    <el-menu-item index="1-2">Option 2</el-menu-item>
-                </el-menu-item-group>
-            </el-sub-menu>
-            <el-sub-menu index="2">
-                <template #title>Sub2</template>
-                <el-menu-item-group title="Group2">
-                    <el-menu-item index="2-1">Option 1</el-menu-item>
-                    <el-menu-item index="2-2">Option 2</el-menu-item>
-                </el-menu-item-group>
-            </el-sub-menu>
+        <el-menu router: true>
+            <el-menu-item v-for="(item, index) in routes" :index="index.toString()" :route="item.path">
+                {{ item.name }}
+            </el-menu-item>
         </el-menu>
     </el-scrollbar>
 </template>
