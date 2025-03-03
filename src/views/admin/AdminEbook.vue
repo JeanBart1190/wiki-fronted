@@ -1,7 +1,8 @@
 <script setup lang='ts'>
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
+// 书籍信息
 interface BookInfo {
     id: number;
     name: string;
@@ -13,21 +14,53 @@ interface BookInfo {
     view_count: number;
     vote_count: number;
 }
-
-// pageSize暂时用不到
 const bookList = ref<BookInfo[]>([]);
-const currentPage = ref(1);
-// 分页大小 初步设置为一页十条
-const pageSize = ref(10);
 
-const getEbookList = async (pageNum: Number, pageSize: Number) => {
-    const res = await axios.get(`http://localhost:8080/ebook/select?pageNum=${pageNum}&pageSize=${pageSize}`);
-
-    bookList.value = res.data.content.list;
+// 分页信息
+interface PaginationInfo {
+    totalItem: number;
+    totalPage: number;
+    currentPage: number;
+    pageSize: number;
 }
 
+const paginationInfo = ref<PaginationInfo>(
+    {
+        totalItem: 0,
+        totalPage: 0,
+        currentPage: 1,
+        // 分页大小默认为10 
+        // 后端限制 分页大小最高为20
+        pageSize: 10,
+    }
+)
+
+
+const getEbookList = async (paginationInfo: PaginationInfo) => {
+    // const res = await axios.get(`http://localhost:8080/ebook/select?pageNum=${pageNum}&pageSize=${pageSize}`);
+    const res = await axios.get("http://localhost:8080/ebook/select", {
+        params: {
+            pageNum: paginationInfo.currentPage,
+            pageSize: paginationInfo.pageSize
+        }
+    });
+
+    // 获取书籍列表
+    bookList.value = res.data.content.list;
+
+    // 获取总条目数以及分页总数
+    paginationInfo.totalItem = res.data.content.totalItem;
+    paginationInfo.totalPage = res.data.content.totalPage;
+}
+
+
 // 加载时 获取书籍列表
-onMounted(() => getEbookList(currentPage.value, pageSize.value));
+onMounted(() => getEbookList(paginationInfo.value));
+
+// 监听 currentPage 和 pageSize 的变化
+watch([() => paginationInfo.value.currentPage, () => paginationInfo.value.pageSize], () => {
+    getEbookList(paginationInfo.value);
+});
 
 </script>
 
@@ -52,8 +85,8 @@ onMounted(() => getEbookList(currentPage.value, pageSize.value));
     <div style="display: flex; justify-content: flex-end;">
 
         <!-- 分页组件 双向绑定currentPage; currentPage 改变时 触发获取书籍列表事件-->
-        <el-pagination v-model:current-page="currentPage" v-on:current-change="getEbookList(currentPage, pageSize)"
-            background layout="prev, pager, next" :total="1000" />
+        <el-pagination v-model:current-page="paginationInfo.currentPage" v-bind:page-count="paginationInfo.totalPage"
+            v-on:current-change="getEbookList(paginationInfo)" background layout="prev, pager, next" />
     </div>
 
 </template>
