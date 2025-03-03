@@ -14,15 +14,20 @@ interface BookInfo {
     vote_count: number;
 }
 
+// pageSize暂时用不到
 const bookList = ref<BookInfo[]>([]);
+const currentPage = ref(1);
+// 分页大小 初步设置为一页十条
+const pageSize = ref(10);
 
-const getEbookList = async () => {
-    const res = await axios.get('http://localhost:8080/ebook/select?bookname=');
-    // console.log(res.data.content);
-    bookList.value = res.data.content;
+const getEbookList = async (pageNum: Number, pageSize: Number) => {
+    const res = await axios.get(`http://localhost:8080/ebook/select?pageNum=${pageNum}&pageSize=${pageSize}`);
+
+    bookList.value = res.data.content.list;
 }
 
-onMounted(() => getEbookList());
+// 加载时 获取书籍列表
+onMounted(() => getEbookList(currentPage.value, pageSize.value));
 
 </script>
 
@@ -45,7 +50,10 @@ onMounted(() => getEbookList());
         </el-table-column>
     </el-table>
     <div style="display: flex; justify-content: flex-end;">
-        <el-pagination background layout="prev, pager, next" :total="1000" />
+
+        <!-- 分页组件 双向绑定currentPage; currentPage 改变时 触发获取书籍列表事件-->
+        <el-pagination v-model:current-page="currentPage" v-on:current-change="getEbookList(currentPage, pageSize)"
+            background layout="prev, pager, next" :total="1000" />
     </div>
 
 </template>

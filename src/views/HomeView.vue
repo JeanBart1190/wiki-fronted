@@ -16,15 +16,19 @@ interface BookInfo {
 }
 
 const bookList = ref<BookInfo[]>([]);
+const currentPage = ref(1);
+const pageSize = ref(10);
 
-const getEbookList = async () => {
-  const res = await axios.get('http://localhost:8080/ebook/select?bookname=');
+const getEbookList = async (pageNum: Number, pageSize: Number) => {
+  const res = await axios.get(`http://localhost:8080/ebook/select?pageNum=${pageNum}&pageSize=${pageSize}`);
   // console.log(res.data.content);
-  bookList.value = res.data.content;
+  // console.log(res.data.content.list);
+
+  bookList.value = res.data.content.list;
 }
 
 onMounted(() => {
-  getEbookList();
+  getEbookList(currentPage.value, pageSize.value);
 });
 </script>
 
