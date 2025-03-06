@@ -16,6 +16,10 @@ interface BookInfo {
 }
 const bookList = ref<BookInfo[]>([])
 
+// 当前编辑的书籍
+const currentEditBook = ref<BookInfo>()
+
+
 // 分页信息
 interface PaginationInfo {
     totalItem: number
@@ -54,8 +58,16 @@ const getEbookList = async (paginationInfo: PaginationInfo) => {
     paginationInfo.totalPage = res.data.content.totalPage
 }
 
+// 编辑按钮点击事件
+const handleEdit = async (book: BookInfo) => {
+    currentEditBook.value = { ...book };
+    dialogVisible.value = true;
+}
+
 // 加载时 获取书籍列表
 onMounted(() => getEbookList(paginationInfo.value))
+
+// 
 </script>
 
 <template>
@@ -66,9 +78,9 @@ onMounted(() => getEbookList(paginationInfo.value))
         <el-table-column prop="view_count" label="View_count" />
         <el-table-column prop="Vote" label="Vote_count" />
         <el-table-column fixed="right" label="Operations" min-width="120">
-            <template #default>
+            <template #default="{ row }">
                 <el-button link type="primary" size="small"> Detail </el-button>
-                <el-button link type="primary" size="small" v-on:click="dialogVisible = true">
+                <el-button link type="primary" size="small" v-on:click="handleEdit(row)">
                     Edit
                 </el-button>
             </template>
@@ -76,7 +88,27 @@ onMounted(() => getEbookList(paginationInfo.value))
     </el-table>
 
     <el-dialog v-model:model-value="dialogVisible" title="Edit" style="width: 25vw">
-
+        <el-form label-position="left">
+            <el-form-item label="封面">
+                <el-input :placeholder="currentEditBook?.cover" />
+            </el-form-item>
+            <el-form-item label="名称">
+                <el-input :placeholder="currentEditBook?.name" />
+            </el-form-item>
+            <el-form-item label="分类一">
+                <el-input :placeholder="String(currentEditBook?.category1_id)" />
+            </el-form-item>
+            <el-form-item label="分类二">
+                <el-input :placeholder="String(currentEditBook?.categpru2_id)" />
+            </el-form-item>
+            <el-form-item label="描述">
+                <el-input :placeholder="currentEditBook?.description" />
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary">Create</el-button>
+                <el-button>Cancel</el-button>
+            </el-form-item>
+        </el-form>
     </el-dialog>
 
     <div style="display: flex; justify-content: flex-end">
