@@ -2,12 +2,13 @@
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
 
+
 // 书籍信息
 interface BookInfo {
     id: number
     name: string
     category1_id: number
-    categpru2_id: number
+    categpry2_id: number
     description: string
     cover: string
     doc_count: number
@@ -17,7 +18,17 @@ interface BookInfo {
 const bookList = ref<BookInfo[]>([])
 
 // 当前编辑的书籍
-const currentEditBook = ref<BookInfo>()
+const currentEditBook = ref<BookInfo>({
+    id: 0,
+    name: '',
+    category1_id: 0,
+    categpry2_id: 0,
+    description: '',
+    cover: '',
+    doc_count: 0,
+    view_count: 0,
+    vote_count: 0
+})
 
 
 // 分页信息
@@ -36,6 +47,8 @@ const paginationInfo = ref<PaginationInfo>({
     // 后端限制 分页大小最高为20
     pageSize: 2,
 })
+
+
 
 // 对话框可见性
 const dialogVisible = ref(false)
@@ -60,8 +73,33 @@ const getEbookList = async (paginationInfo: PaginationInfo) => {
 
 // 编辑按钮点击事件
 const handleEdit = async (book: BookInfo) => {
+    // 获取当前行的书籍信息
     currentEditBook.value = { ...book };
+
+    // 对话框可见
     dialogVisible.value = true;
+}
+
+// 表单保存
+const saveEbook = async () => {
+    console.log(currentEditBook.value)
+
+    const res = await axios.post('http://localhost:8080/ebook/edit', {
+        id: currentEditBook.value.id,
+        name: currentEditBook.value.name,
+        category1Id: currentEditBook.value.category1_id,
+        category2Id: currentEditBook.value.categpry2_id,
+        description: currentEditBook.value.description,
+        cover: currentEditBook.value.cover,
+        docCount: currentEditBook.value.doc_count,
+        viewCount: currentEditBook.value.view_count,
+        voteCount: currentEditBook.value.vote_count,
+    })
+
+    console.log('相应状态:' + res.data.message)
+    if (res.data.success == true) {
+        getEbookList(paginationInfo.value)
+    }
 }
 
 // 加载时 获取书籍列表
@@ -88,24 +126,24 @@ onMounted(() => getEbookList(paginationInfo.value))
     </el-table>
 
     <el-dialog v-model:model-value="dialogVisible" title="Edit" style="width: 25vw">
-        <el-form label-position="left">
+        <el-form label-width="auto">
             <el-form-item label="封面">
-                <el-input :placeholder="currentEditBook?.cover" />
+                <el-input v-model="currentEditBook.cover" />
             </el-form-item>
             <el-form-item label="名称">
-                <el-input :placeholder="currentEditBook?.name" />
+                <el-input v-model="currentEditBook.name" />
             </el-form-item>
             <el-form-item label="分类一">
-                <el-input :placeholder="String(currentEditBook?.category1_id)" />
+                <el-input :value="currentEditBook.category1_id" />
             </el-form-item>
             <el-form-item label="分类二">
-                <el-input :placeholder="String(currentEditBook?.categpru2_id)" />
+                <el-input :value="currentEditBook.categpry2_id" />
             </el-form-item>
             <el-form-item label="描述">
-                <el-input :placeholder="currentEditBook?.description" />
+                <el-input :value="currentEditBook.description" />
             </el-form-item>
             <el-form-item>
-                <el-button type="primary">Create</el-button>
+                <el-button type="primary" @click="saveEbook">Create</el-button>
                 <el-button>Cancel</el-button>
             </el-form-item>
         </el-form>
