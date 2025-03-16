@@ -60,7 +60,7 @@ const paginationInfo = ref<PaginationInfo>({
     currentPage: 1,
     // 分页大小默认为10
     // 后端限制 分页大小最高为20
-    pageSize: 2,
+    pageSize: 10,
 })
 
 
@@ -101,7 +101,7 @@ const handleAdd = async () => {
     initCurrentEditBook();
 }
 
-// 表单保存
+// 电子书保存
 const saveEbook = async () => {
     console.log(currentEditBook.value)
 
@@ -125,6 +125,16 @@ const saveEbook = async () => {
     initCurrentEditBook()
 }
 
+const handleDelete = async (book: BookInfo) => {
+    const res = await axios.post('http://localhost:8080/ebook/delete', {
+        id: String(book.id)
+    })
+    if (res.data.success == true) {
+        getEbookList(paginationInfo.value)
+        console.log('删除成功')
+    }
+}
+
 // 加载时 获取书籍列表
 onMounted(() => getEbookList(paginationInfo.value))
 
@@ -132,7 +142,7 @@ onMounted(() => getEbookList(paginationInfo.value))
 </script>
 
 <template>
-    <el-table :data="bookList" style="width: 100%; margin-bottom: 50vh">
+    <el-table :data="bookList" style="width: 100%; margin-bottom: 10vh">
         <el-table-column prop="id" label="Id" />
         <el-table-column prop="name" label="Name" />
         <el-table-column prop="doc_count" label="Doc_count" />
@@ -140,10 +150,17 @@ onMounted(() => getEbookList(paginationInfo.value))
         <el-table-column prop="Vote" label="Vote_count" />
         <el-table-column fixed="right" label="Operations" min-width="120">
             <template #default="{ row }">
-                <el-button link type="primary" size="small"> Detail </el-button>
-                <el-button link type="primary" size="small" @click="handleEdit(row)">
-                    Edit
+                <!-- 编辑, 点击后弹出修改对话框 -->
+                <el-button type="primary" size="small" @click="handleEdit(row)">
+                    编辑
                 </el-button>
+                <!-- 删除 及其确认气泡 -->
+                <el-popconfirm title="确认删除?" confirm-button-text="是" cancel-button-text="否"
+                    @confirm="handleDelete(row)">
+                    <template #reference>
+                        <el-button type="danger" size="small"> 删除 </el-button>
+                    </template>
+                </el-popconfirm>
             </template>
         </el-table-column>
     </el-table>
@@ -152,6 +169,7 @@ onMounted(() => getEbookList(paginationInfo.value))
         Add Item
     </el-button>
 
+    <!-- 修改书籍信息对话框 -->
     <el-dialog v-model:model-value="dialogVisible" title="Edit" style="width: 25vw">
         <el-form label-width="auto">
             <el-form-item label="封面">
@@ -170,7 +188,9 @@ onMounted(() => getEbookList(paginationInfo.value))
                 <el-input v-model="currentEditBook.description" />
             </el-form-item>
             <el-form-item>
+                <!-- 修改书籍信息 -->
                 <el-button type="primary" @click="saveEbook">Create</el-button>
+                <!-- 取消修改 -->
                 <el-button>Cancel</el-button>
             </el-form-item>
         </el-form>

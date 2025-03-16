@@ -24,7 +24,7 @@ onMounted(() => {
 <template>
     <el-scrollbar>
         <el-menu router: true>
-            <el-menu-item v-for="(item, index) in routes" :index="index.toString()" :route="item.path">
+            <el-menu-item v-for="(item, index) in routes" :key="index" :index="index.toString()" :route="item.path">
                 {{ item.name }}
             </el-menu-item>
         </el-menu>
