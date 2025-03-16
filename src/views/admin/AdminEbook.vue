@@ -5,10 +5,10 @@ import { onMounted, ref } from 'vue'
 
 // 书籍信息
 interface BookInfo {
-    id: number
+    id: number | null
     name: string
     category1_id: number
-    categpry2_id: number
+    category2_id: number
     description: string
     cover: string
     doc_count: number
@@ -19,16 +19,31 @@ const bookList = ref<BookInfo[]>([])
 
 // 当前编辑的书籍
 const currentEditBook = ref<BookInfo>({
-    id: 0,
+    id: null,
     name: '',
     category1_id: 0,
-    categpry2_id: 0,
+    category2_id: 0,
     description: '',
     cover: '',
     doc_count: 0,
     view_count: 0,
     vote_count: 0
 })
+
+// 初始化当前编辑的书籍
+const initCurrentEditBook = (): void => {
+    currentEditBook.value = {
+        id: null,
+        name: '',
+        category1_id: 0,
+        category2_id: 0,
+        description: '',
+        cover: '',
+        doc_count: 0,
+        view_count: 0,
+        vote_count: 0
+    }
+}
 
 
 // 分页信息
@@ -80,6 +95,12 @@ const handleEdit = async (book: BookInfo) => {
     dialogVisible.value = true;
 }
 
+// 编辑添加按钮事件
+const handleAdd = async () => {
+    dialogVisible.value = true;
+    initCurrentEditBook();
+}
+
 // 表单保存
 const saveEbook = async () => {
     console.log(currentEditBook.value)
@@ -88,7 +109,7 @@ const saveEbook = async () => {
         id: currentEditBook.value.id,
         name: currentEditBook.value.name,
         category1Id: currentEditBook.value.category1_id,
-        category2Id: currentEditBook.value.categpry2_id,
+        category2Id: currentEditBook.value.category2_id,
         description: currentEditBook.value.description,
         cover: currentEditBook.value.cover,
         docCount: currentEditBook.value.doc_count,
@@ -100,6 +121,8 @@ const saveEbook = async () => {
     if (res.data.success == true) {
         getEbookList(paginationInfo.value)
     }
+
+    initCurrentEditBook()
 }
 
 // 加载时 获取书籍列表
@@ -109,7 +132,7 @@ onMounted(() => getEbookList(paginationInfo.value))
 </script>
 
 <template>
-    <el-table :data="bookList" style="width: 100%; margin-bottom: 20vh">
+    <el-table :data="bookList" style="width: 100%; margin-bottom: 50vh">
         <el-table-column prop="id" label="Id" />
         <el-table-column prop="name" label="Name" />
         <el-table-column prop="doc_count" label="Doc_count" />
@@ -118,12 +141,16 @@ onMounted(() => getEbookList(paginationInfo.value))
         <el-table-column fixed="right" label="Operations" min-width="120">
             <template #default="{ row }">
                 <el-button link type="primary" size="small"> Detail </el-button>
-                <el-button link type="primary" size="small" v-on:click="handleEdit(row)">
+                <el-button link type="primary" size="small" @click="handleEdit(row)">
                     Edit
                 </el-button>
             </template>
         </el-table-column>
     </el-table>
+
+    <el-button class="mt-4" style="width: 100%; margin-bottom: 5vh" @click="handleAdd()">
+        Add Item
+    </el-button>
 
     <el-dialog v-model:model-value="dialogVisible" title="Edit" style="width: 25vw">
         <el-form label-width="auto">
@@ -134,13 +161,13 @@ onMounted(() => getEbookList(paginationInfo.value))
                 <el-input v-model="currentEditBook.name" />
             </el-form-item>
             <el-form-item label="分类一">
-                <el-input :value="currentEditBook.category1_id" />
+                <el-input v-model="currentEditBook.category1_id" />
             </el-form-item>
             <el-form-item label="分类二">
-                <el-input :value="currentEditBook.categpry2_id" />
+                <el-input v-model="currentEditBook.category2_id" />
             </el-form-item>
             <el-form-item label="描述">
-                <el-input :value="currentEditBook.description" />
+                <el-input v-model="currentEditBook.description" />
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="saveEbook">Create</el-button>
