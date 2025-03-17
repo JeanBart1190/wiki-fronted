@@ -19,7 +19,7 @@ const bookList = ref<BookInfo[]>([]);
 const currentPage = ref(1);
 const pageSize = ref(10);
 
-const getEbookList = async (pageNum: Number, pageSize: Number) => {
+const getEbookList = async (pageNum: number, pageSize: number) => {
   const res = await axios.get(`http://localhost:8080/ebook/select?pageNum=${pageNum}&pageSize=${pageSize}`);
   // console.log(res.data.content);
   // console.log(res.data.content.list);

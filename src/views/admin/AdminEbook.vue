@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios'
+import { ElMessage } from 'element-plus'
 import { onMounted, ref } from 'vue'
 
 
@@ -77,13 +78,22 @@ const getEbookList = async (paginationInfo: PaginationInfo) => {
             pageSize: paginationInfo.pageSize,
         },
     })
+    console.log(res.data.success)
 
-    // 获取电子书列表
-    bookList.value = res.data.content.list
+    if (res.data.success === false) {
+        ElMessage({
+            message: res.data.message,
+            type: 'error',
+            plain: true,
+        })
+    } else {
+        // 获取电子书列表
+        bookList.value = res.data.content.list
 
-    // 获取总条目数以及分页总数
-    paginationInfo.totalItem = res.data.content.totalItem
-    paginationInfo.totalPage = res.data.content.totalPage
+        // 获取总条目数以及分页总数
+        paginationInfo.totalItem = res.data.content.totalItem
+        paginationInfo.totalPage = res.data.content.totalPage
+    }
 }
 
 // 编辑按钮点击事件
@@ -122,6 +132,7 @@ const saveEbook = async () => {
         getEbookList(paginationInfo.value)
     }
 
+    dialogVisible.value = false;
     initCurrentEditBook()
 }
 
