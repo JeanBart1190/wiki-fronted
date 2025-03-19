@@ -176,10 +176,15 @@ onMounted(() => getEbookList(paginationInfo.value))
 </script>
 
 <template>
-    <div>
-        <el-input v-model="searchInput" style="width: 10vw; margin-right: 1vw;"></el-input>
-        <el-button type="primary" @click="handleSearch(searchInput, paginationInfo)">Search</el-button>
-    </div>
+    <el-form :inline="true" class="demo-form-inline">
+        <el-form-item>
+            <el-input v-model="searchInput" placeholder="请输入书名" clearable />
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="handleSearch(searchInput, paginationInfo)">Search</el-button>
+        </el-form-item>
+    </el-form>
+
     <el-table :data="bookList" style="width: 100%; margin-bottom: 10vh">
         <el-table-column prop="id" label="Id" />
         <el-table-column prop="name" label="Name" />
