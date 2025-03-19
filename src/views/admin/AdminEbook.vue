@@ -64,6 +64,8 @@ const paginationInfo = ref<PaginationInfo>({
     pageSize: 10,
 })
 
+// 搜索框
+const searchInput = ref('')
 
 
 // 对话框可见性
@@ -80,20 +82,12 @@ const getEbookList = async (paginationInfo: PaginationInfo) => {
     })
     console.log(res.data.success)
 
-    if (res.data.success === false) {
-        ElMessage({
-            message: res.data.message,
-            type: 'error',
-            plain: true,
-        })
-    } else {
-        // 获取电子书列表
-        bookList.value = res.data.content.list
+    // 获取电子书列表
+    bookList.value = res.data.content.list
 
-        // 获取总条目数以及分页总数
-        paginationInfo.totalItem = res.data.content.totalItem
-        paginationInfo.totalPage = res.data.content.totalPage
-    }
+    // 获取总条目数以及分页总数
+    paginationInfo.totalItem = res.data.content.totalItem
+    paginationInfo.totalPage = res.data.content.totalPage
 }
 
 // 编辑按钮点击事件
@@ -128,14 +122,24 @@ const saveEbook = async () => {
     })
 
     console.log('相应状态:' + res.data.message)
-    if (res.data.success == true) {
+
+    if (res.data.success === true) {
         getEbookList(paginationInfo.value)
+        dialogVisible.value = false;
+        initCurrentEditBook()
+    }
+    if (res.data.success === false) {
+        ElMessage({
+            message: res.data.message,
+            type: 'error',
+            plain: true,
+        })
     }
 
-    dialogVisible.value = false;
-    initCurrentEditBook()
+
 }
 
+// 删除电子书
 const handleDelete = async (book: BookInfo) => {
     const res = await axios.post('http://localhost:8080/ebook/delete', {
         id: String(book.id)
@@ -146,6 +150,25 @@ const handleDelete = async (book: BookInfo) => {
     }
 }
 
+// 搜索电子书
+const handleSearch = async (keywords: string, paginationInfo: PaginationInfo) => {
+    const res = await axios.get('http://localhost:8080/ebook/select', {
+        params: {
+            name: keywords,
+            pageNum: paginationInfo.currentPage,
+            pageSize: paginationInfo.pageSize,
+        },
+    })
+    console.log(res.data.success)
+
+    // 获取电子书列表
+    bookList.value = res.data.content.list
+
+    // 获取总条目数以及分页总数
+    paginationInfo.totalItem = res.data.content.totalItem
+    paginationInfo.totalPage = res.data.content.totalPage
+}
+
 // 加载时 获取书籍列表
 onMounted(() => getEbookList(paginationInfo.value))
 
@@ -153,6 +176,10 @@ onMounted(() => getEbookList(paginationInfo.value))
 </script>
 
 <template>
+    <div>
+        <el-input v-model="searchInput" style="width: 10vw; margin-right: 1vw;"></el-input>
+        <el-button type="primary" @click="handleSearch(searchInput, paginationInfo)">Search</el-button>
+    </div>
     <el-table :data="bookList" style="width: 100%; margin-bottom: 10vh">
         <el-table-column prop="id" label="Id" />
         <el-table-column prop="name" label="Name" />
